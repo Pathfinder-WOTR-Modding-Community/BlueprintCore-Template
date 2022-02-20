@@ -14,7 +14,7 @@ namespace ModTemplate
     private static LogWrapper Logger = LogWrapper.Get("ModTemplate");
 
     /// <summary>
-    /// Unity Mod Manager entry point. Called to load your mod.
+    /// Unity Mod Manager entry point. Called to load the mod.
     /// </summary>
     static bool Load(UnityModManager.ModEntry modEntry)
     {
@@ -32,6 +32,9 @@ namespace ModTemplate
       return true;
     }
 
+    /// <summary>
+    /// Patch for BlueprintsCache.Init(). This is when it is safe to add / modify blueprints.
+    /// </summary>
     [HarmonyPatch(typeof(BlueprintsCache))]
     static class BlueprintsCache_Patch
     {
@@ -50,12 +53,15 @@ namespace ModTemplate
             return;
           }
           Initialized = true;
+          Logger.Info("Initializing blueprints.");
 
           // Call your configure/init methods for new content (blueprints) here
 
           MyArchetype.Configure();
           MyClass.Configure();
           MySpell.Configure();
+
+          Logger.Info("Initialization finished.");
         }
         catch (Exception e)
         {
