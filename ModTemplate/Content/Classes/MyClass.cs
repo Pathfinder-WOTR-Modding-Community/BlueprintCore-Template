@@ -18,14 +18,16 @@ namespace ModTemplate.Content
     {
       // Creates a Class
       var myClass = CharacterClassConfigurator.New(Name, Guid)
-        .SetLocalizedName(LocalizationTool.CreateString(Name, Name))
+        // Don't tag names or weird things happen
+        .SetLocalizedName(LocalizationTool.CreateString(Name, Name, tagEncyclopediaEntries: false))
         .SetLocalizedDescription(LocalizationTool.CreateString(Description, Description))
         .Configure();
 
       // Adds the class to the class selection UI
-      CommonTool.Append(
-        BlueprintRoot.Instance.Progression.m_CharacterClasses,
-        myClass.ToReference<BlueprintCharacterClassReference>());
+      BlueprintRoot.Instance.Progression.m_CharacterClasses =
+        CommonTool.Append(
+          BlueprintRoot.Instance.Progression.m_CharacterClasses,
+          myClass.ToReference<BlueprintCharacterClassReference>());
     }
   }
 }

@@ -16,7 +16,8 @@ namespace ModTemplate.Content.Archetypes
     {
       // Creates an Archetype
       ArchetypeConfigurator.New(Name, Guid)
-        .SetDisplayName(LocalizationTool.CreateString(Name, Name))
+        // Don't tag names or weird things happen
+        .SetDisplayName(LocalizationTool.CreateString(Name, Name, tagEncyclopediaEntries: false))
         .SetDescription(LocalizationTool.CreateString(Description, Description))
         .Configure();
 

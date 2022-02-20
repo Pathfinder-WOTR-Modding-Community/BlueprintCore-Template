@@ -18,7 +18,8 @@ namespace ModTemplate.Content.Feats
     {
       // Creates a feat
       FeatureConfigurator.New(Name, Guid)
-        .SetDisplayName(LocalizationTool.CreateString(Name, Name))
+        // Don't tag names or weird things happen
+        .SetDisplayName(LocalizationTool.CreateString(Name, Name, tagEncyclopediaEntries: false))
         .SetDescription(LocalizationTool.CreateString(Description, Description))
         .SetFeatureGroups(FeatureGroup.Feat)
         .Configure();
