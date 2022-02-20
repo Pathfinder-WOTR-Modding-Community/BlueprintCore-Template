@@ -350,5 +350,5 @@ MigrationBackup/
 .ionide/
 
 # Custom config
-ModTemplate/lib/Assembly-CSharp_public.dll
+ModTemplate/lib/**
 *.sln
