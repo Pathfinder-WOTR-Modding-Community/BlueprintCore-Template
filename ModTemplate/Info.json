@@ -1,0 +1,10 @@
+﻿{
+  "Id": "BlueprintCore-Template",
+  "DisplayName": "BlueprintCore Mod Template",
+  "Author": "",
+  "Version": "0.0.1",
+  "ManagerVersion": "0.21.3",
+  "Requirements": [],
+  "AssemblyName": "ModTemplate.dll",
+  "EntryMethod": "ModTemplate.Main.Load"
+}
