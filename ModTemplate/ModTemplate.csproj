@@ -24,14 +24,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.13" />
     <PackageReference Include="WW-Blueprint-Core" Version="1.3.2" />
   </ItemGroup>
 	
 	<ItemGroup>
 		<!-- Main Wrath Assembly, Publicized -->
 		<Reference Include="Assembly-CSharp">
-			<HintPath>$(SolutionDir)lib\Assembly-CSharp_public.dll</HintPath>
-			<Private>false</Private>
+			<HintPath>$(SolutionDir)lib\Assembly-CSharp.dll</HintPath>
 		</Reference>
 		
 		<!-- Wrath Assemblies -->
@@ -65,14 +65,48 @@
 			<HintPath>$(WrathPath)\Wrath_Data\Managed\UnityModManager\UnityModManager.dll</HintPath>
 		</Reference>
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <None Update="Info.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 
 	<!-- Generates Assembly-CSharp_public.dll -->
 	<Target Name="Publicize" AfterTargets="Clean">
 		<ItemGroup>
 			<Assemblies Include="$(WrathPath)\Wrath_Data\Managed\Assembly-CSharp.dll" />
+			<PublicAssembly Include="$(SolutionDir)lib\Assembly-CSharp_public.dll" />
+			<RenamedAssembly Include="$(SolutionDir)lib\Assembly-CSharp.dll" />
 		</ItemGroup>
 
 		<PublicizeTask InputAssemblies="@(Assemblies)" OutputDir="$(SolutionDir)lib/" />
+		<!-- ILRepack requires the assembly name match the reference so remove _public -->
+		<Move SourceFiles="@(PublicAssembly)" DestinationFiles="@(RenamedAssembly)" />
+	</Target>
+
+	<!-- Merges BlueprintCore.dll into the main DLL -->
+	<Target Name="ILRepack" AfterTargets="Build">
+		<ItemGroup>
+			<InputAssemblies Include="BlueprintCore.dll" />
+			<InputAssemblies Include="$(AssemblyName).dll" />
+			<OutputAssembly Include="$(AssemblyName).dll" />
+		</ItemGroup>
+
+		<Message Text="Merging: @(InputAssemblies) into @(OutputAssembly)" Importance="High" />
+
+		<ILRepack OutputType="Dll" MainAssembly="@(OutputAssembly)" OutputAssembly="@(OutputAssembly)" InputAssemblies="@(InputAssemblies)" WorkingDirectory="$(OutputPath)" />
+	</Target>
+
+	<!-- Automatically deploys the mod on build -->
+	<Target Name="Deploy" AfterTargets="ILRepack">
+		<ItemGroup>
+			<Assembly Include="$(OutputPath)\$(AssemblyName).dll" />
+			<ModConfig Include="$(OutputPath)\Info.json" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(Assembly)" DestinationFolder="$(WrathPath)\Mods\$(MSBuildProjectName)" />
+		<Copy SourceFiles="@(ModConfig)" DestinationFolder="$(WrathPath)\Mods\$(MSBuildProjectName)" />
 	</Target>
 
 </Project>
